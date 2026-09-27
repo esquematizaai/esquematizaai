@@ -2,7 +2,7 @@
 // Dados gerados a partir da planilha "Produtos (1).xlsx" (ver README.md desta pasta).
 // Importe SEMPRE deste index; os JSONs são detalhe interno.
 
-import { paraLoja } from '@/config';
+import { paraLoja, processadorDoCheckout } from '@/config';
 import produtosDb from './produtos.json';
 import cuponsDb from './cupons.json';
 import ofertasDb from './ofertas-personalizadas.json';
@@ -395,7 +395,21 @@ export function selosDe(p: Produto): string[] {
     selos.push('Compatível com o Anki');
   }
   if (tem(/suporte/)) selos.push('Suporte por WhatsApp');
-  if (p.checkouts.normal || p.checkouts.black) selos.push('Pagamento seguro pela Eduzz');
+  /**
+   * O SELO DIZIA "Eduzz" PARA TODO MUNDO, porque nascia só de "tem link de
+   * checkout?". No Tecnologia da Informação Esquematizada, cobrado pela Tutory,
+   * ele afirmava a empresa errada bem ao lado do botão de comprar. O Sérgio viu
+   * em 27/09, nove dias depois de ver o mesmo erro na frase logo acima.
+   *
+   * Agora quem responde é o endereço do checkout, pela mesma função que a frase
+   * usa. Destino que não reconhecemos ganha a versão genérica, que é verdadeira
+   * para qualquer um deles.
+   */
+  const checkout = p.checkouts.normal ?? p.checkouts.black;
+  if (checkout) {
+    const processador = processadorDoCheckout(checkout);
+    selos.push(processador ? `Pagamento seguro pela ${processador}` : 'Pagamento 100% seguro');
+  }
 
   return selos;
 }

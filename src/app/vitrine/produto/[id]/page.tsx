@@ -20,7 +20,7 @@ import CarrosselProva from '@/components/CarrosselProva';
 import { produtos, produtoPor, ofertaAtual, formatarPreco, capaDe, conteudoDe, selosDe, type Produto } from '@/data/catalogo';
 import { produtoAjustado } from '@/lib/catalogo-ajustes';
 import { rotuloDeFerramenta, SLUG_DA_AREA } from '@/data/catalogo/rotulos';
-import { SITE_URL, URL_DA_LOJA, AMOSTRAS_DRIVE_URL, textoParaLoja } from '@/config';
+import { SITE_URL, URL_DA_LOJA, AMOSTRAS_DRIVE_URL, textoParaLoja, processadorDoCheckout } from '@/config';
 import { jsonLdSeguro } from '@/lib/json-ld';
 import styles from './styles.module.css';
 
@@ -43,16 +43,11 @@ function avisoDePagamento(oferta: { checkout: string; viaPaginaDeVendas: boolean
   if (oferta.checkout.startsWith(URL_DA_LOJA)) {
     return 'Você vai para o carrinho da loja, com o material já adicionado.';
   }
-  // endereço torto não pode derrubar a página inteira do produto: o campo vem
-  // do painel, digitado à mão, e um espaço a mais já quebraria o new URL()
-  let host = '';
-  try {
-    host = new URL(oferta.checkout).hostname;
-  } catch {
-    return 'Você vai para o checkout seguro do material.';
-  }
-
-  if (/(^|\.)eduzz\.com$/i.test(host)) return 'Pagamento processado pela Eduzz.';
+  // A MESMA FUNÇÃO QUE DECIDE O SELO VERDE ao lado do botão. Em 27/09 os dois
+  // discordavam na mesma tela: esta frase já dizia o genérico para a Tutory e o
+  // selo continuava afirmando Eduzz, porque cada um decidia por conta própria.
+  const processador = processadorDoCheckout(oferta.checkout);
+  if (processador) return `Pagamento processado pela ${processador}.`;
   return 'Você vai para o checkout seguro do material.';
 }
 

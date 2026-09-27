@@ -56,6 +56,42 @@ export const SITE_URL: string = 'https://esquematizaai.com';
  */
 export const URL_DA_LOJA: string = 'https://loja.esquematizaai.com';
 
+/**
+ * Quem processa o pagamento daquele link, pelo endereço dele.
+ *
+ * ISTO JÁ MENTIU EM PRODUÇÃO DUAS VEZES, e as duas o Sérgio viu antes de mim.
+ * Em 18/09 a frase embaixo do botão dizia "Pagamento processado pela Eduzz" num
+ * material cobrado pela Tutory. Consertei a frase e deixei passar o selo verde
+ * do lado, que dizia a mesma mentira por outro caminho: ele nascia de "tem
+ * link de checkout?", e todo checkout era tratado como Eduzz. Em 27/09 ele
+ * apontou o selo, no Tecnologia da Informação Esquematizada.
+ *
+ * Por isso a resposta passou a morar numa função só. Dois lugares decidindo a
+ * mesma coisa por conta própria é a razão de um ter sido consertado e o outro
+ * não.
+ *
+ * DEVOLVE null PARA QUEM NÃO RECONHECE, e quem chama escreve uma frase
+ * verdadeira e genérica. Nunca o nome de uma empresa por eliminação: o catálogo
+ * já teve três destinos de compra e vai ter mais, e afirmar a mais é pior que
+ * afirmar de menos quando o assunto é para onde vai o dinheiro.
+ */
+export function processadorDoCheckout(url: string | null | undefined): string | null {
+  if (!url) return null;
+
+  // endereço torto não pode derrubar a página: o campo vem do painel, digitado
+  // à mão, e um espaço a mais já quebraria o new URL()
+  let host = '';
+  try {
+    host = new URL(url).hostname;
+  } catch {
+    return null;
+  }
+
+  if (/(^|\.)eduzz\.com$/i.test(host)) return 'Eduzz';
+  if (/(^|\.)plataformatutory\.com\.br$/i.test(host)) return 'Tutory';
+  return null;
+}
+
 /** Reaponta um link da loja para o endereço vigente dela. */
 export function paraLoja(link: string): string {
   if (URL_DA_LOJA === SITE_URL) return link;
