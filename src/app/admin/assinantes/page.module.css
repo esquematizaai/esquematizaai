@@ -1,0 +1,207 @@
+.pagina {
+  max-width: 1040px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.titulo {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  line-height: 1.1;
+  color: var(--color-neutral-dark);
+  margin: 0;
+}
+
+.subtitulo {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: rgba(35, 33, 44, 0.6);
+}
+
+.baixar {
+  flex-shrink: 0;
+  padding: 0.65rem 1.1rem;
+  border: none;
+  border-radius: 0.55rem;
+  background-color: var(--color-cold-dark);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.baixar:hover {
+  filter: brightness(1.15);
+}
+
+.baixar:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.explicacao {
+  margin: 0;
+  padding: 0.9rem 1.05rem;
+  border-radius: 0.6rem;
+  background-color: var(--color-cold-light);
+  color: var(--color-cold-dark);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+/* ------------------------------------------------------------------ resumo */
+
+.resumo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.fatia {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background-color: rgba(38, 52, 79, 0.07);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-cold-dark);
+}
+
+.fatia strong {
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------------- filtros */
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.input {
+  box-sizing: border-box;
+  flex: 1 1 220px;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid rgba(38, 52, 79, 0.2);
+  border-radius: 0.55rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-neutral-dark);
+  background-color: #fff;
+}
+
+.input:focus-visible {
+  outline: 3px solid var(--color-cold-primary);
+  outline-offset: 1px;
+}
+
+.recado {
+  margin: 0;
+  padding: 0.7rem 0.95rem;
+  border-radius: 0.55rem;
+  background-color: #e6f4ea;
+  color: #1e4620;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+}
+
+.medida {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: rgba(35, 33, 44, 0.55);
+}
+
+/* ------------------------------------------------------------------ lista */
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* uma linha por pessoa, em colunas fixas: lista de contato se lê varrendo a
+   coluna do e-mail de cima a baixo, e coluna que dança a cada linha obriga a
+   reler */
+.item {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) 9rem minmax(0, 1fr) 4.5rem 7rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid rgba(38, 52, 79, 0.12);
+  border-radius: 0.55rem;
+  background-color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+}
+
+.email {
+  font-weight: 600;
+  color: var(--color-neutral-dark);
+  overflow-wrap: anywhere;
+}
+
+.telefone,
+.area,
+.quando {
+  color: rgba(35, 33, 44, 0.65);
+  white-space: nowrap;
+}
+
+.quando {
+  text-align: right;
+}
+
+.subiu,
+.falhou {
+  justify-self: end;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.subiu {
+  background-color: #e6f4ea;
+  color: #1e4620;
+}
+
+.falhou {
+  background-color: rgba(255, 115, 69, 0.16);
+  color: var(--color-hot-dark);
+  cursor: help;
+}
+
+@media (max-width: 820px) {
+  .cabecalho {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* no celular a linha vira bloco: cinco colunas em 375px espremeriam o
+     e-mail, que é a única coisa que sempre precisa ser lida inteira */
+  .item {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.3rem;
+  }
+
+  .quando {
+    text-align: left;
+  }
+}

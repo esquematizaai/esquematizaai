@@ -125,23 +125,73 @@
       ]
     },
     {
+      "titulo": "PIXEL E PUBLICIDADE DIRECIONADA",
+      "itens": [
+        {
+          "texto": "Utilizamos o Google Tag Manager para gerenciar as ferramentas de medição deste site.",
+          "numero": "8.1."
+        },
+        {
+          "texto": "Por meio dele, o Meta Pixel (Facebook e Instagram) coleta dados sobre a sua navegação, incluindo páginas visitadas, materiais visualizados e cliques nos botões de compra, além do seu endereço IP e de identificadores do seu navegador.",
+          "numero": "8.2."
+        },
+        {
+          "texto": "Esses dados são enviados à Meta Platforms, Inc. e utilizados para medir o resultado dos nossos anúncios e para exibir publicidade direcionada a você dentro e fora do Facebook e do Instagram. A base legal para esse tratamento é o legítimo interesse, nos termos do artigo 7º, inciso IX, da Lei Geral de Proteção de Dados (Lei nº 13.709/2018).",
+          "numero": "8.3."
+        },
+        {
+          "texto": "Você pode se opor a esse tratamento a qualquer momento nas configurações de anúncios da sua conta na Meta, em accountscenter.facebook.com, ou bloqueando cookies de terceiros no seu navegador. Isso não afeta o seu acesso aos nossos materiais nem a sua compra.",
+          "numero": "8.4."
+        }
+      ]
+    },
+    {
+      "titulo": "NEWSLETTER E DADOS QUE VOCÊ NOS INFORMA",
+      "itens": [
+        {
+          "texto": "Ao se cadastrar na nossa newsletter, coletamos o seu endereço de e-mail e, se você quiser informar, o seu telefone (WhatsApp) e a área de concurso do seu interesse.",
+          "numero": "9.1."
+        },
+        {
+          "texto": "O telefone e a área são opcionais: o cadastro se completa apenas com o e-mail, e deixar esses campos em branco não limita nada do que você recebe.",
+          "numero": "9.2."
+        },
+        {
+          "texto": "Usamos esses dados para enviar conteúdo sobre editais, datas de prova e dicas de estudo, e para comunicar novidades sobre os nossos materiais. A base legal é o seu consentimento, nos termos do artigo 7º, inciso I, da Lei Geral de Proteção de Dados.",
+          "numero": "9.3."
+        },
+        {
+          "texto": "Os dados ficam armazenados nos nossos servidores e na Resend, plataforma que utilizamos para o envio dos e-mails. Não vendemos nem cedemos a sua lista de contato a terceiros.",
+          "numero": "9.4."
+        },
+        {
+          "texto": "Você pode cancelar a inscrição a qualquer momento pelo link de descadastro presente em todos os e-mails que enviamos, ou escrevendo para contato@esquematizaai.com. O cancelamento retira você da lista e interrompe os envios.",
+          "numero": "9.5."
+        },
+        {
+          "texto": "A qualquer momento você pode solicitar, pelo mesmo endereço, a confirmação de que tratamos os seus dados, o acesso a eles, a correção de dados incompletos ou desatualizados, a portabilidade e a eliminação dos dados tratados com o seu consentimento, conforme o artigo 18 da Lei Geral de Proteção de Dados.",
+          "numero": "9.6."
+        }
+      ]
+    },
+    {
       "titulo": "COMPROMISSO DO USUÁRIO",
       "itens": [
         {
           "texto": "O usuário se compromete a fazer uso adequado dos conteúdos e da informação que o Esquematiza aí oferece no site e com caráter enunciativo, mas não limitativo:",
-          "numero": "8.1."
+          "numero": "10.1."
         },
         {
           "texto": "A) Não se envolver em atividades que sejam ilegais ou contrárias à boa fé a à ordem pública;",
-          "numero": "8.2."
+          "numero": "10.2."
         },
         {
           "texto": "B) Não difundir propaganda ou conteúdo de natureza racista, xenofóbica, ou casas de apostas, jogos de sorte e azar, qualquer tipo de pornografia ilegal, de apologia ao terrorismo ou contra os direitos humanos;",
-          "numero": "8.3."
+          "numero": "10.3."
         },
         {
           "texto": "C) Não causar danos aos sistemas físicos (hardwares) e lógicos (softwares) do Esquematiza aí, de seus fornecedores ou terceiros, para introduzir ou disseminar vírus informáticos ou quaisquer outros sistemas de hardware ou software que sejam capazes de causar danos anteriormente mencionados.",
-          "numero": "8.4."
+          "numero": "10.4."
         }
       ]
     },
@@ -150,11 +200,11 @@
       "itens": [
         {
           "texto": "Esperemos que esteja esclarecido e, como mencionado anteriormente, se houver algo que você não tem certeza se precisa ou não, geralmente é mais seguro deixar os cookies ativados, caso interaja com um dos recursos que você usa em nosso site.",
-          "numero": "9.1."
+          "numero": "11.1."
         },
         {
-          "texto": "Esta política é efetiva a partir de Dez/2022.",
-          "numero": "9.2."
+          "texto": "Esta política é efetiva a partir de Dez/2022, com atualização em Out/2026 para incluir o pixel de publicidade e a newsletter.",
+          "numero": "11.2."
         }
       ]
     }

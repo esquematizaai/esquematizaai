@@ -19,6 +19,11 @@ const IconFile = () => (
     <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
   </svg>
 );
+const IconMail = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>
+  </svg>
+);
 const IconUsers = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
@@ -47,6 +52,7 @@ const navItems: { href: string; label: string; icon: React.ReactNode; funcao: Fu
   { href: '/admin/cursos', label: 'Cursos', icon: <IconPackage />, funcao: 'produtos' },
   { href: '/admin/noticias', label: 'Notícias', icon: <IconFile />, funcao: 'blog' },
   { href: '/admin/blog', label: 'Blog', icon: <IconFile />, funcao: 'blog' },
+  { href: '/admin/assinantes', label: 'Assinantes', icon: <IconMail />, funcao: 'dono' },
   { href: '/admin/acessos', label: 'Acessos', icon: <IconUsers />, funcao: 'dono' },
 ];
 

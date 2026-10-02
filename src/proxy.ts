@@ -76,6 +76,7 @@ export async function proxy(request: NextRequest) {
     { prefixo: '/admin/blog', rpc: 'pode_blog' },
     { prefixo: '/admin/noticias', rpc: 'pode_blog' },
     { prefixo: '/admin/acessos', rpc: 'eh_dono' },
+    { prefixo: '/admin/assinantes', rpc: 'eh_dono' },
   ];
 
   // Tela de login: só quem já é administrador é levado direto ao painel.
