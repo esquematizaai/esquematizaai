@@ -3,6 +3,8 @@
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { salvarSumario, devolverParaPlanilha, salvarArea, criarDisciplina } from './actions';
+import Importador, { type MaterialOpcao } from './Importador';
+export type { MaterialOpcao };
 import styles from './page.module.css';
 
 export interface DisciplinaAdmin {
@@ -24,7 +26,13 @@ export interface DisciplinaAdmin {
 
 const AREAS = ['Fiscal', 'Gestão e Controle', 'Policial', 'Tribunal', 'Bancária', 'Legislativo'];
 
-export default function Gerenciador({ itens }: { itens: DisciplinaAdmin[] }) {
+export default function Gerenciador({
+  itens,
+  materiais,
+}: {
+  itens: DisciplinaAdmin[];
+  materiais: MaterialOpcao[];
+}) {
   const router = useRouter();
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<'todas' | 'planilha' | 'painel' | 'sem-area'>('todas');
@@ -94,6 +102,11 @@ export default function Gerenciador({ itens }: { itens: DisciplinaAdmin[] }) {
           {criando ? 'Cancelar' : 'Nova disciplina'}
         </button>
       </header>
+
+      {/* Colar o sumario inteiro resolve o "travo na parte do sumario": e o
+          caminho de quem tem o texto pronto. "Nova disciplina", acima, continua
+          sendo o caminho de quem vai digitar uma so. */}
+      <Importador materiais={materiais} />
 
       {aviso?.id === 'nova' && (
         <p className={aviso.erro ? styles.erro : styles.sucesso}>{aviso.texto}</p>

@@ -1,6 +1,8 @@
 import { criarSupabaseServer } from '@/lib/supabase/server';
 import sumarios from '@/data/catalogo/sumarios.json';
-import Gerenciador, { type DisciplinaAdmin } from './Gerenciador';
+import { produtos } from '@/data/catalogo';
+import { lerProdutosDoPainel, somenteOsQueFaltam } from '@/lib/produtos-do-painel';
+import Gerenciador, { type DisciplinaAdmin, type MaterialOpcao } from './Gerenciador';
 
 // Sempre dinâmico: quem acabou de salvar precisa ver o que salvou.
 export const dynamic = 'force-dynamic';
@@ -78,5 +80,18 @@ export default async function SumariosAdminPage() {
     };
   });
 
-  return <Gerenciador itens={itens} />;
+  /**
+   * Os materiais que podem receber um sumário, para o importador já ligar.
+   *
+   * Inclui os cadastrados no painel, e não só os da planilha: foi exatamente
+   * por eles faltarem nesta lista que o SEFAZ-AL ficou com as 16 disciplinas
+   * cadastradas e invisíveis no site.
+   */
+  const doPainel = await lerProdutosDoPainel();
+  const materiais: MaterialOpcao[] = [...produtos, ...somenteOsQueFaltam(doPainel, produtos)]
+    .filter((p) => ['assinatura', 'combo', 'isolado'].includes(p.categoria) && p.status !== 'inativo')
+    .map((p) => ({ id: p.id, nome: p.nome }))
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+
+  return <Gerenciador itens={itens} materiais={materiais} />;
 }

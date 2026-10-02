@@ -418,3 +418,148 @@
     margin-left: auto;
   }
 }
+
+/* ---------------------------------------------- colar sumário inteiro */
+
+.importador {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.1rem 1.2rem 1.25rem;
+  border: 1px solid rgba(38, 52, 79, 0.14);
+  border-radius: 0.7rem;
+  background-color: rgba(187, 227, 240, 0.12);
+}
+
+.importadorTopo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.importadorTitulo {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--color-neutral-dark);
+}
+
+.importadorAjuda {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(35, 33, 44, 0.65);
+}
+
+.importadorCampos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.importadorCampos .campo {
+  flex: 1 1 240px;
+}
+
+/* o que foi entendido do texto, antes de gravar */
+.conferencia {
+  padding: 0.85rem 1rem;
+  border-radius: 0.55rem;
+  background-color: #fff;
+  border: 1px solid rgba(38, 52, 79, 0.12);
+}
+
+.conferenciaTitulo {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--color-cold-dark);
+}
+
+.conferenciaLista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+}
+
+.conferenciaLista li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.conferenciaLista strong {
+  color: var(--color-neutral-dark);
+}
+
+.conferenciaLista span {
+  color: rgba(35, 33, 44, 0.6);
+  font-size: 0.8rem;
+}
+
+/* o que não deu para entender: laranja, porque é para ler antes de gravar */
+.avisos {
+  list-style: none;
+  margin: 0.7rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.45rem;
+  background-color: rgba(255, 115, 69, 0.1);
+  color: var(--color-hot-dark);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.dica {
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  color: rgba(35, 33, 44, 0.55);
+}
+
+.btnPrimario {
+  align-self: flex-start;
+  padding: 0.65rem 1.2rem;
+  border: none;
+  border-radius: 0.55rem;
+  background-color: var(--color-cold-dark);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnPrimario:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.btnPrimario:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnSecundario {
+  align-self: flex-start;
+  padding: 0.55rem 1rem;
+  border: 1.5px solid rgba(38, 52, 79, 0.2);
+  border-radius: 0.55rem;
+  background-color: #fff;
+  color: var(--color-cold-dark);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnSecundario:hover {
+  border-color: var(--color-cold-primary);
+}
