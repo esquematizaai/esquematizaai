@@ -271,3 +271,37 @@
     font-size: 1.65rem;
   }
 }
+
+/* Recado de falha, no lugar onde a pessoa estava olhando.
+   Em cima do formulário ela não veria: o olho está no botão que acabou de
+   clicar. */
+.erro {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--color-hot-dark);
+  background-color: rgba(255, 115, 69, 0.1);
+  border-radius: 0.45rem;
+  padding: 0.6rem 0.8rem;
+}
+
+/* A saída do segundo passo.
+   Discreta, mas visível: o e-mail já está salvo, e esconder a saída
+   transformaria a janela numa cobrança por telefone. */
+.pular {
+  display: block;
+  margin: 0 auto;
+  padding: 0.35rem 0.5rem;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  color: rgba(35, 33, 44, 0.6);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pular:hover {
+  color: var(--color-neutral-dark);
+}
