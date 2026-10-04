@@ -293,8 +293,8 @@ export default function Gerenciador({
 
           <div className={styles.linhaCampos}>
             <label className={styles.campo}>
-              <span className={styles.rotulo}>Link do checkout na Eduzz</span>
-              <input name="checkout" className={styles.input} placeholder="chk.eduzz.com/xxxxx" />
+              <span className={styles.rotulo}>Link do checkout</span>
+              <input name="checkout" className={styles.input} placeholder="eduzz, tutory, loja... cole o endereço" />
             </label>
 
             <label className={styles.campo}>

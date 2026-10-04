@@ -234,7 +234,7 @@ export async function criarMaterial(formData: FormData): Promise<ResultadoAjuste
   if (!checkout && !urlSite) {
     return {
       ok: false,
-      erro: 'Falta o caminho de compra: o link da Eduzz ou o link da página de vendas. Sem um dos dois o botão não teria para onde ir.',
+      erro: 'Falta o caminho de compra: o link do checkout ou o link da página de vendas. Sem um dos dois o botão não teria para onde ir.',
     };
   }
 
