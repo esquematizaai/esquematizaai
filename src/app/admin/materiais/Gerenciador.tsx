@@ -15,6 +15,8 @@ export type ItemAdmin = {
   ferramenta: string | null;
   precoPlanilha: number | null;
   precoAjustado: number | null;
+  /** preço riscado ao lado do cobrado; null = sem risco */
+  precoDe: number | null;
   temCheckout: boolean;
   vendavel: boolean;
   descricaoAjustada: string | null;
@@ -385,6 +387,29 @@ export default function Gerenciador({
                 defaultValue={editando.precoAjustado ?? ''}
                 placeholder="deixe vazio para usar o da planilha"
               />
+            </label>
+
+            {/* O PRECO RISCADO SO EXISTIA NO FORMULARIO DE CRIAR MATERIAL.
+                Quem edita material da planilha achava o preco e nao achava o
+                "de": ele morava numa lista escrita no codigo, e so eu mexia. O
+                Sergio topou com isso em 05/10, depois de mudar o preco sozinho
+                e nao conseguir riscar o valor antigo. */}
+            <label className={styles.campo}>
+              <span className={styles.rotulo}>
+                Preço &quot;de&quot;, riscado <em className={styles.ajuda}>opcional</em>
+              </span>
+              <input
+                className={styles.input}
+                name="preco_de"
+                inputMode="decimal"
+                defaultValue={editando.precoDe ?? ''}
+                placeholder="vazio = sem risco"
+              />
+              <span className={styles.ajuda}>
+                Aparece riscado ao lado do preço, com a porcentagem de desconto. Precisa ser
+                MAIOR que o preço de venda. Só coloque valor pelo qual o material já foi
+                vendido de verdade: riscar preço que nunca existiu é propaganda enganosa.
+              </span>
             </label>
 
             <label className={styles.campo}>

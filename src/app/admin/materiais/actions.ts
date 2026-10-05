@@ -108,6 +108,30 @@ export async function salvarAjuste(formData: FormData): Promise<ResultadoAjuste>
     return { ok: false, erro: 'Preço inválido. Use apenas números, por exemplo 597 ou 597,00.' };
   }
 
+  /**
+   * O preço riscado ao lado do cobrado.
+   *
+   * Até 05/10 isto só existia numa lista escrita no código, e o Sérgio topou
+   * com a falta dela depois de mudar um preço sozinho pelo painel: achou o
+   * campo do preço e não achou onde riscar o valor antigo.
+   *
+   * RECUSA VALOR MENOR OU IGUAL AO COBRADO. Riscar R$ 500 e cobrar R$ 600 não
+   * é desconto, é erro de digitação na cara do cliente. E valor pelo qual o
+   * material nunca foi vendido é propaganda enganosa, mas isso só quem sabe é
+   * quem digita.
+   */
+  const deTexto = String(formData.get('preco_de') ?? '').trim().replace(/\./g, '').replace(',', '.');
+  const precoDe = deTexto ? Number(deTexto) : null;
+  if (deTexto && (Number.isNaN(precoDe) || precoDe! <= 0)) {
+    return { ok: false, erro: 'Preço "de" inválido. Use apenas números, por exemplo 997.' };
+  }
+  if (precoDe !== null && preco !== null && precoDe <= preco) {
+    return {
+      ok: false,
+      erro: 'O preço "de" precisa ser MAIOR que o preço de venda, senão o desconto vira piada.',
+    };
+  }
+
   const descricao = String(formData.get('descricao') ?? '').trim() || null;
   const observacao = String(formData.get('observacao') ?? '').trim() || null;
   const oculto = String(formData.get('oculto') ?? '') === 'on';
@@ -162,6 +186,7 @@ export async function salvarAjuste(formData: FormData): Promise<ResultadoAjuste>
     {
       produto_id,
       preco,
+      preco_de: precoDe,
       descricao,
       observacao,
       oculto,

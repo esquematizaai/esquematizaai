@@ -41,6 +41,8 @@ export interface Ajuste {
    * plataformas diferentes em produtos diferentes.
    */
   checkout: string | null;
+  /** preco ancora, riscado ao lado do cobrado */
+  preco_de: number | null;
 }
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -53,7 +55,7 @@ async function buscarAjustes(): Promise<Map<string, Ajuste>> {
     const supabase = createClient(URL, CHAVE, { auth: { persistSession: false } });
     const { data, error } = await supabase
       .from('produtos_ajustes')
-      .select('produto_id, preco, descricao, oculto, destaque, ordem, checkout');
+      .select('produto_id, preco, descricao, oculto, destaque, ordem, checkout, preco_de');
 
     if (error) {
       console.error('[catalogo] ajustes indisponíveis:', error.message);
@@ -131,7 +133,7 @@ export async function catalogoParaVitrine(): Promise<ProdutoAjustado[]> {
     const ajustado = aplicar(p, a);
     // o preço "de" do painel é digitado pelo Sérgio e não passa pelo mapa de
     // referências da planilha, então entra por aqui
-    const oferta = ofertaAtual(ajustado, referencias.get(p.id) ?? null);
+    const oferta = ofertaAtual(ajustado, a?.preco_de ?? referencias.get(p.id) ?? null);
     if (!oferta) continue;
 
     saida.push({
@@ -179,7 +181,7 @@ export async function ajustadosPorId(ids: string[]): Promise<Map<string, Produto
     if (a?.oculto) continue;
 
     const ajustado = aplicar(base, a);
-    const oferta = ofertaAtual(ajustado, referencias.get(base.id) ?? null);
+    const oferta = ofertaAtual(ajustado, a?.preco_de ?? referencias.get(base.id) ?? null);
     if (!oferta) continue;
 
     saida.set(id, {
@@ -243,7 +245,7 @@ export async function produtoAjustado(id: string): Promise<ProdutoAjustado | nul
   if (a?.oculto) return null;
 
   const ajustado = aplicar(base, a);
-  const oferta = ofertaAtual(ajustado, referenciasDoPainel(doPainel).get(base.id) ?? null);
+  const oferta = ofertaAtual(ajustado, a?.preco_de ?? referenciasDoPainel(doPainel).get(base.id) ?? null);
   if (!oferta) return null;
 
   return {

@@ -67,7 +67,7 @@ const CONSULTAS = [
     nome: 'ajustes de produto (painel sobre a planilha)',
     origem: 'src/lib/catalogo-ajustes.ts',
     tabela: 'produtos_ajustes',
-    colunas: 'produto_id, preco, descricao, oculto, destaque, ordem, checkout',
+    colunas: 'produto_id, preco, descricao, oculto, destaque, ordem, checkout, preco_de',
   },
   {
     nome: 'produtos cadastrados no painel',
