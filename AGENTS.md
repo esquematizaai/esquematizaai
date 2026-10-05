@@ -141,8 +141,9 @@ de novo. Não é bug do seu código.
 
 ## Como trabalhar aqui
 
-A branch `master` é protegida: **exige pull request aprovado**. Push direto é
-recusado.
+O repositório é `esquematizaai/esquematizaai`. A branch `master` aceita push
+direto: a regra de pull request aprovado foi retirada em 05/10/2026, porque o
+único revisor possível era quem pedia a alteração.
 
 ```
 git checkout -b minha-alteracao
@@ -150,14 +151,24 @@ git checkout -b minha-alteracao
 npm run build          # obrigatório antes de commitar
 git add -A
 git commit -m "..."
-git push -u origin minha-alteracao
+git push origin HEAD:master
 ```
-
-Depois abra o pull request no GitHub e espere a aprovação.
 
 **Build passando não é o mesmo que funcionando.** Antes de dizer que terminou,
 abra a página e confira o efeito. Este projeto já teve capa quebrada, download
 fora do ar e produto invisível com o build passando tranquilo.
+
+**Push aceito não é o mesmo que no ar.** Quem publica é a Vercel, por um
+webhook do GitHub, e esse elo já se rompeu uma vez: quando o repositório saiu
+de `pplacerda07` para a organização `esquematizaai`, o projeto na Vercel ficou
+com `Project Link not found` na tela de Git e parou de receber os pushes. O
+GitHub aceitava tudo, o site continuava no código do dia anterior, e nada
+avisava. Dois commits de 05/10 passaram horas assim.
+
+Como saber, sem abrir o painel da Vercel: escolha algo que só o código novo
+faria aparecer e procure na página publicada. Se o banco tem o dado, o site
+consegue lê-lo e mesmo assim a página não mostra, o código que está rodando lá
+é mais velho que o seu commit.
 
 ## Regras da casa
 
