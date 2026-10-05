@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { salvarAjuste, limparAjuste, criarMaterial, apagarMaterialDoPainel, trocarCapaDoPainel } from './actions';
+import { editarMaterialDoPainel, salvarAjuste, limparAjuste, criarMaterial, apagarMaterialDoPainel, trocarCapaDoPainel } from './actions';
 import CapaUpload from './CapaUpload';
 import PainelScript from './PainelScript';
 import styles from './page.module.css';
@@ -114,6 +114,7 @@ export default function Gerenciador({
   const router = useRouter();
   const [apagando, setApagando] = useState<string | null>(null);
   const [trocandoCapa, setTrocandoCapa] = useState<string | null>(null);
+  const [editandoPainel, setEditandoPainel] = useState<MaterialDoPainel | null>(null);
   const [busca, setBusca] = useState('');
   const [segmento, setSegmento] = useState('todos');
   const [soAjustados, setSoAjustados] = useState(false);
@@ -567,6 +568,22 @@ export default function Gerenciador({
                 </div>
 
                 <div className={styles.itemAcoes}>
+                  {/* ATÉ 06/10 ESTE BOTÃO NÃO EXISTIA. Material cadastrado no
+                      painel só aceitava troca de capa depois de criado: preço,
+                      descrição e checkout não tinham onde mexer. O Sérgio
+                      concluiu, com razão, que precisaria criar um produto novo
+                      para corrigir um texto. */}
+                  <button
+                    type="button"
+                    className={styles.btnLinha}
+                    onClick={() => {
+                      setEditandoPainel(editandoPainel?.id === m.id ? null : m);
+                      setErro('');
+                    }}
+                    aria-expanded={editandoPainel?.id === m.id}
+                  >
+                    Ajustar
+                  </button>
                   <button
                     type="button"
                     className={styles.btnSecundario}
@@ -640,6 +657,90 @@ export default function Gerenciador({
                         className={styles.btnSecundario}
                         onClick={() => setTrocandoCapa(null)}
                       >
+                        Cancelar
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {editandoPainel?.id === m.id && (
+                  <form
+                    className={styles.formEdicao}
+                    action={(fd) => {
+                      fd.set('id', m.id);
+                      setErro('');
+                      iniciar(async () => {
+                        const r = await editarMaterialDoPainel(fd);
+                        if (!r.ok) return setErro(r.erro ?? 'Não foi possível salvar.');
+                        setEditandoPainel(null);
+                        setAvisoNovo(`"${m.nome}" foi atualizado.`);
+                        router.refresh();
+                      });
+                    }}
+                  >
+                    {/* O endereço não está aqui de propósito: mudar o endereço
+                        de uma página que já está no ar quebra link
+                        compartilhado, anúncio apontando para lá e o que o
+                        Google indexou. Renomear material é comum; mudar o
+                        endereço dele não. */}
+                    <p className={styles.formId}>/vitrine/produto/{m.id}</p>
+
+                    <label className={styles.campo}>
+                      <span className={styles.rotulo}>Nome</span>
+                      <input name="nome" className={styles.input} defaultValue={m.nome} required />
+                    </label>
+
+                    <div className={styles.linhaCampos}>
+                      <label className={styles.campo}>
+                        <span className={styles.rotulo}>Preço de venda</span>
+                        <input name="preco" className={styles.input} defaultValue={m.preco} required inputMode="decimal" />
+                      </label>
+                      <label className={styles.campo}>
+                        <span className={styles.rotulo}>Preço &quot;de&quot;, riscado</span>
+                        <input name="preco_de" className={styles.input} defaultValue={m.precoDe ?? ''} inputMode="decimal" placeholder="vazio = sem risco" />
+                      </label>
+                    </div>
+
+                    <div className={styles.linhaCampos}>
+                      <label className={styles.campo}>
+                        <span className={styles.rotulo}>Área</span>
+                        <input name="area" className={styles.input} defaultValue={m.area ?? ''} />
+                      </label>
+                      <label className={styles.campo}>
+                        <span className={styles.rotulo}>Ferramenta</span>
+                        <input name="ferramenta" className={styles.input} defaultValue={m.ferramenta ?? ''} />
+                      </label>
+                      <label className={styles.campo}>
+                        <span className={styles.rotulo}>Categoria</span>
+                        <input name="categoria" className={styles.input} defaultValue={m.categoria} />
+                      </label>
+                    </div>
+
+                    <label className={styles.campo}>
+                      <span className={styles.rotulo}>Link do checkout</span>
+                      <input name="checkout" className={styles.input} defaultValue={m.checkout ?? ''} placeholder="eduzz, tutory, loja... cole o endereço" />
+                    </label>
+
+                    <label className={styles.campo}>
+                      <span className={styles.rotulo}>Link da página de vendas</span>
+                      <input name="url_site" className={styles.input} defaultValue={m.urlSite ?? ''} />
+                    </label>
+
+                    <label className={styles.campo}>
+                      <span className={styles.rotulo}>Descrição</span>
+                      <textarea name="descricao" className={styles.textarea} rows={10} defaultValue={m.descricao ?? ''} />
+                    </label>
+
+                    <label className={styles.check}>
+                      <input type="checkbox" name="oculto" defaultChecked={m.oculto} />
+                      Ocultar do site
+                    </label>
+
+                    <div className={styles.acoesForm}>
+                      <button type="submit" className={styles.btnPrimario} disabled={salvando}>
+                        {salvando ? 'Salvando...' : 'Salvar'}
+                      </button>
+                      <button type="button" className={styles.btnSecundario} onClick={() => setEditandoPainel(null)}>
                         Cancelar
                       </button>
                     </div>

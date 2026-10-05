@@ -535,3 +535,86 @@ export async function trocarCapaDoPainel(formData: FormData): Promise<ResultadoA
   revalidarLoja();
   return { ok: true };
 }
+
+/**
+ * Editar um material cadastrado no painel.
+ *
+ * ATÉ 06/10 NÃO DAVA. Depois de criado, o material do painel só aceitava troca
+ * de capa: preço, descrição, checkout, nada disso tinha onde mexer. O Sérgio
+ * topou com isso ao tentar corrigir os Detalhes do Tecnologia da Informação e
+ * concluiu, com razão, que teria que criar um produto novo para mudar um texto.
+ *
+ * O ID NÃO MUDA, mesmo que o nome mude. Ele é o endereço da página, e trocar
+ * endereço de página que já está no ar quebra link compartilhado, anúncio
+ * apontando para lá e o que o Google já indexou. Renomear material é comum;
+ * mudar o endereço dele não.
+ */
+export async function editarMaterialDoPainel(formData: FormData): Promise<ResultadoAjuste> {
+  const permissao = await exigirAdmin('produtos');
+  if (!permissao.ok) return { ok: false, erro: permissao.erro };
+
+  const id = String(formData.get('id') ?? '').trim();
+  if (!id) return { ok: false, erro: 'Material não identificado.' };
+
+  const nome = String(formData.get('nome') ?? '').trim();
+  if (!nome) return { ok: false, erro: 'O nome não pode ficar vazio.' };
+
+  const precoTexto = String(formData.get('preco') ?? '').trim().replace(/\./g, '').replace(',', '.');
+  const preco = Number(precoTexto);
+  if (!precoTexto || Number.isNaN(preco) || preco <= 0) {
+    return { ok: false, erro: 'Preço inválido. Use apenas números, por exemplo 597 ou 597,00.' };
+  }
+
+  const deTexto = String(formData.get('preco_de') ?? '').trim().replace(/\./g, '').replace(',', '.');
+  const precoDe = deTexto ? Number(deTexto) : null;
+  if (deTexto && (Number.isNaN(precoDe) || precoDe! <= preco)) {
+    return {
+      ok: false,
+      erro: 'O preço "de" precisa ser MAIOR que o preço de venda, senão o desconto vira piada.',
+    };
+  }
+
+  const checkout = String(formData.get('checkout') ?? '').trim() || null;
+  const urlSite = String(formData.get('url_site') ?? '').trim() || null;
+  if (!checkout && !urlSite) {
+    return {
+      ok: false,
+      erro: 'Falta o caminho de compra: o link do checkout ou o link da página de vendas.',
+    };
+  }
+
+  const paraLink = (v: string | null) => {
+    if (!v) return null;
+    if (!/^https?:\/\//i.test(v)) return `https://${v}`;
+    return v;
+  };
+
+  // mesma barreira do cadastro, ignorando o proprio material: senao ele
+  // acusaria conflito do produto com ele mesmo a cada salvamento
+  const conflito = await conflitoDeLink(paraLink(checkout), paraLink(urlSite), id);
+  if (conflito) return { ok: false, erro: conflito };
+
+  const supabase = await criarSupabaseServer();
+  const { error } = await supabase
+    .from('produtos_novos')
+    .update({
+      nome,
+      categoria: String(formData.get('categoria') ?? '').trim() || 'isolado',
+      area: String(formData.get('area') ?? '').trim() || null,
+      ferramenta: String(formData.get('ferramenta') ?? '').trim() || null,
+      preco,
+      preco_de: precoDe,
+      checkout: paraLink(checkout),
+      url_site: paraLink(urlSite),
+      descricao: String(formData.get('descricao') ?? '').trim() || null,
+      oculto: String(formData.get('oculto') ?? '') === 'on',
+      atualizado_por: permissao.email,
+      atualizado_em: new Date().toISOString(),
+    })
+    .eq('id', id);
+
+  if (error) return { ok: false, erro: error.message };
+
+  revalidarLoja();
+  return { ok: true };
+}

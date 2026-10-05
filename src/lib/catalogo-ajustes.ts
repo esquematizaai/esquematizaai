@@ -103,6 +103,16 @@ export interface ProdutoAjustado {
   /** posição que o Sérgio digitou no painel, ou null */
   ordem: number | null;
   /**
+   * A descrição ESCRITA NO PAINEL, quando existe.
+   *
+   * Vem separada do produto de propósito. Dentro de aplicar() ela já entra
+   * em produto.sobre, e ali fica indistinguível do texto da planilha: a
+   * página não teria como saber se aquilo foi o Sérgio quem escreveu ou se
+   * veio da raspagem do WordPress. Era por isso que o texto importado ganhava
+   * dela, mesmo depois de ele reescrever a descrição no painel.
+   */
+  descricaoDoPainel: string | null;
+  /**
    * Capa do produto criado no painel. Os da planilha continuam com a do
    * capas.json, resolvida por capaDe(); só os do painel guardam a imagem no
    * Supabase, porque o painel não escreve no repositório.
@@ -140,6 +150,7 @@ export async function catalogoParaVitrine(): Promise<ProdutoAjustado[]> {
       produto: ajustado,
       oferta,
       destaque: Boolean(a?.destaque) || destacadosNoPainel.has(p.id),
+      descricaoDoPainel: a?.descricao ?? null,
       ordem: a?.ordem ?? null,
       capaDoPainel: capas.get(p.id) ?? null,
     });
@@ -188,6 +199,7 @@ export async function ajustadosPorId(ids: string[]): Promise<Map<string, Produto
       produto: ajustado,
       oferta,
       destaque: Boolean(a?.destaque) || destacadosNoPainel.has(base.id),
+      descricaoDoPainel: a?.descricao ?? null,
       ordem: a?.ordem ?? null,
       capaDoPainel: capas.get(base.id) ?? null,
     });
@@ -252,6 +264,7 @@ export async function produtoAjustado(id: string): Promise<ProdutoAjustado | nul
     produto: ajustado,
     oferta,
     destaque: Boolean(a?.destaque) || destaquesDoPainel(doPainel).has(base.id),
+    descricaoDoPainel: a?.descricao ?? null,
     ordem: a?.ordem ?? null,
     capaDoPainel: capasDoPainel(doPainel).get(base.id) ?? null,
   };

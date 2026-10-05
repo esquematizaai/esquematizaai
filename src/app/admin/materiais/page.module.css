@@ -547,3 +547,17 @@
   padding-top: 0.9rem;
   border-top: 1px solid rgba(38, 52, 79, 0.12);
 }
+
+/* Formulário de editar material do painel. Abre dentro do próprio cartão,
+   abaixo dos botões, para a pessoa não perder de vista qual material está
+   mexendo quando há vários parecidos na lista. */
+.formEdicao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+  padding: 1rem 1.1rem 1.15rem;
+  border-top: 1px solid rgba(38, 52, 79, 0.12);
+  background-color: rgba(187, 227, 240, 0.1);
+  border-radius: 0 0 0.6rem 0.6rem;
+}

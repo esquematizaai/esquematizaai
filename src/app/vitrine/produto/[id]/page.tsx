@@ -72,6 +72,31 @@ export function generateStaticParams() {
  */
 export const revalidate = 60;
 
+/**
+ * Tira a marcação do Markdown para o texto que vai para a aba e para o Google.
+ *
+ * Não renderiza nada: só limpa. Título, negrito, link, item de lista e as
+ * caixas :::  viram texto corrido, porque o Google mostra isso como frase e
+ * asterisco no meio de uma frase parece erro de digitação da loja.
+ */
+function semMarcacao(texto: string): string {
+  return texto
+    // caixas coloridas: :::importante, :::dica[DICA DE PROVA]
+    .replace(/:::[a-zA-Z]*(\[[^\]]*\])?/g, ' ')
+    // títulos: ## COMBO RESUMOS
+    .replace(/^#{1,6}\s+/gm, '')
+    // marcador de item: "- este combo contém"
+    .replace(/^\s*[-*+]\s+/gm, '')
+    // link vira só o texto dele
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    // negrito, itálico e code
+    .replace(/(\*\*|__|\*|_|`)/g, '')
+    // o "1\." que existe só para o Markdown não numerar sozinho
+    .replace(/\\([.\-])/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -90,10 +115,19 @@ export async function generateMetadata({
    * Apareceu em 19/09 no primeiro material que o Sérgio cadastrou sozinho, o
    * Flashcards Reta Final SEFAZ-AL, que estava assim em produção.
    */
-  const produto = produtoPor(id) ?? (await produtoAjustado(id))?.produto ?? null;
+  const ajuste = await produtoAjustado(id);
+  const produto = produtoPor(id) ?? ajuste?.produto ?? null;
   if (!produto) return { title: 'Produto não encontrado' };
-  const descricao = produto.sobre
-    ? produto.sobre.replace(/\s+/g, ' ').trim().slice(0, 155)
+  /**
+   * O resumo da aba e do Google, sem a marcação do Markdown.
+   *
+   * O Sérgio viu "## COMBO RESUMOS" e "**37 (trinta e sete)**" saindo no
+   * JSON-LD com asterisco e cerquilha. O corte em 155 caracteres só apertava
+   * o espaço, então metade do que sobrava era pontuação de formatação.
+   */
+  const fonteDaDescricao = ajuste?.descricaoDoPainel ?? produto.sobre;
+  const descricao = fonteDaDescricao
+    ? semMarcacao(fonteDaDescricao).slice(0, 155)
     : `${produto.nome}: material do Esquematiza Aí para concursos públicos.`;
   return {
     title: `${produto.nome} | Esquematiza Aí`,
@@ -132,7 +166,7 @@ export default async function ProdutoPage({
   const ajustado = await produtoAjustado(id);
   if (!ajustado) notFound();
 
-  const { produto, oferta, capaDoPainel } = ajustado;
+  const { produto, oferta, capaDoPainel, descricaoDoPainel } = ajustado;
 
   const areaSlug = produto.area ? SLUG_DA_AREA[produto.area] : null;
   const linkArea = areaSlug ? `/vitrine/${areaSlug}` : '/vitrine';
@@ -378,7 +412,15 @@ export default async function ProdutoPage({
                     HTML cru continua saindo escapado, porque rehype-raw segue
                     desligado. É o que impede texto do painel virar script na
                     página. */}
-                <Conteudo markdown={sobre ?? produto.sobre ?? ''} />
+                {/* A DESCRIÇÃO DO PAINEL GANHA DE TUDO, desde 06/10.
+
+                    Antes o texto raspado do WordPress vencia, e o Sérgio
+                    reescrevia a descrição no painel sem nada mudar na página:
+                    ela só ia parar no JSON-LD. Os dois combos fiscais ficaram
+                    anunciando 33 resumos e 3.405 páginas depois de ele já ter
+                    corrigido para 37 e 4.281. Quem escreve por último é quem
+                    sabe o que o material tem hoje. */}
+                <Conteudo markdown={descricaoDoPainel ?? sobre ?? produto.sobre ?? ''} />
               </section>
             )}
 
