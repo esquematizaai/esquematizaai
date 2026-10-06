@@ -12,7 +12,7 @@ import InstagramSection from '@/components/InstagramSection';
 import Arsenal from '@/components/Arsenal';
 import ContactForm from '@/components/ContactForm';
 import Footer from '@/components/Footer';
-import LeadPopup from '@/components/LeadPopup';
+// import LeadPopup from '@/components/LeadPopup';  // desligado, veja o fim do arquivo
 import { SITE_URL } from '@/config';
 import styles from './page.module.css';
 
@@ -57,7 +57,21 @@ export default function Home() {
       <InstagramSection />
       <ContactForm />
       <Footer />
-      <LeadPopup />
+      {/* O POP-UP DA NEWSLETTER ESTÁ DESLIGADO, E É PARA VOLTAR.
+          Decisão do Pedro em 05/10/2026, enquanto corre a migração dos alunos
+          da Eduzz e da Tutory: o aviso da nova área de membros abre em toda
+          página, e quem chega à home agora é em boa parte aluno antigo
+          procurando o material que já pagou, não visitante para virar lead.
+
+          O LeadPopup já sabe ceder a vez quando o aviso está na tela, então
+          tecnicamente os dois conviviam. Isto aqui é escolha de quem manda, e
+          não conserto de defeito: pedir e-mail no meio de uma migração é pedir
+          na hora errada.
+
+          PARA RELIGAR: tire o comentário desta linha e o do import lá em cima.
+          O aviso da área de membros morre sozinho em 31/12/2026, e a partir daí
+          a newsletter volta a ser o único pop-up da home.
+          <LeadPopup /> */}
     </main>
   );
 }
