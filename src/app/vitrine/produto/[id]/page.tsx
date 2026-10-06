@@ -166,7 +166,7 @@ export default async function ProdutoPage({
   const ajustado = await produtoAjustado(id);
   if (!ajustado) notFound();
 
-  const { produto, oferta, capaDoPainel, descricaoDoPainel } = ajustado;
+  const { produto, oferta, capaDoPainel, descricaoDoPainel, detalhesDoPainel } = ajustado;
 
   const areaSlug = produto.area ? SLUG_DA_AREA[produto.area] : null;
   const linkArea = areaSlug ? `/vitrine/${areaSlug}` : '/vitrine';
@@ -229,6 +229,13 @@ export default async function ProdutoPage({
     detalhes: conteudoBruto.detalhes ? textoParaLoja(conteudoBruto.detalhes) : conteudoBruto.detalhes,
   };
   const sobre = conteudo.sobre ?? null;
+  /**
+   * O quadro "Detalhes do produto": o do painel quando existe, senao o da
+   * planilha. Passa pelo textoParaLoja igual ao da planilha, para link de
+   * produto escrito la dentro continuar indo para a loja e nao para uma pagina
+   * nossa que nao existe.
+   */
+  const detalhes = detalhesDoPainel ? textoParaLoja(detalhesDoPainel) : conteudo.detalhes;
   const selos = selosDe(produto);
 
   /**
@@ -428,8 +435,16 @@ export default async function ProdutoPage({
               </section>
             )}
 
-            {/* Detalhes: os módulos, com o que já está liberado e o que vem depois */}
-            {(conteudo.detalhes || produto.disciplinas) && (
+            {/* Detalhes: os módulos, com o que já está liberado e o que vem depois.
+
+                O PAINEL MANDA AQUI DESDE 06/10/2026, igual à descrição acima.
+                Este quadro vinha só da planilha, e o Sérgio precisou acrescentar
+                um módulo inteiro: tentou pela descrição, com um título
+                "## Detalhes do produto", e o texto foi parar em "Sobre o
+                material" enquanto este seguia mostrando a lista antiga. São
+                dois campos diferentes da mesma página, e agora os dois têm o
+                mesmo encaixe. */}
+            {(detalhes || produto.disciplinas) && (
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
                   Detalhes do <span className={styles.sectionAccent}>produto</span>
@@ -437,8 +452,8 @@ export default async function ProdutoPage({
                 {conteudo.detalhesTitulo && (
                   <p className={styles.detalhesEtiqueta}>{conteudo.detalhesTitulo}</p>
                 )}
-                {conteudo.detalhes ? (
-                  <Conteudo markdown={conteudo.detalhes} />
+                {detalhes ? (
+                  <Conteudo markdown={detalhes} />
                 ) : (
                   <div className={styles.longText}>{produto.disciplinas}</div>
                 )}

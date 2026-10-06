@@ -20,6 +20,10 @@ export type ItemAdmin = {
   temCheckout: boolean;
   vendavel: boolean;
   descricaoAjustada: string | null;
+  /** quadro "Detalhes do produto" escrito no painel; null = usa o da planilha */
+  detalhesAjustados: string | null;
+  /** o que a planilha tem hoje, para o campo abrir preenchido */
+  detalhesDaPlanilha: string | null;
   observacao: string | null;
   oculto: boolean;
   destaque: boolean;
@@ -45,6 +49,7 @@ export type MaterialDoPainel = {
   urlSite: string | null;
   capaUrl: string | null;
   descricao: string | null;
+  detalhes: string | null;
   oculto: boolean;
   criadoEm: string | null;
 };
@@ -142,6 +147,7 @@ export default function Gerenciador({
   const foiAjustado = (i: ItemAdmin) =>
     i.precoAjustado !== null ||
     i.descricaoAjustada !== null ||
+    i.detalhesAjustados !== null ||
     i.checkoutAjustado !== null ||
     i.oculto ||
     i.destaque;
@@ -492,6 +498,32 @@ export default function Gerenciador({
             <AjudaDeFormatacao />
           </label>
 
+          {/* O QUADRO DE BAIXO DA PAGINA, que ate 06/10/2026 so a planilha
+              escrevia. O campo abre PREENCHIDO com o texto que esta no ar: sao
+              ate 33 linhas numeradas, e pedir para redigitar tudo isso so para
+              acrescentar um modulo seria o mesmo que nao ter o campo.
+
+              Salvar sem mexer nao cria ajuste: a acao compara com a planilha e,
+              se for igual, grava vazio. Assim o produto continua acompanhando a
+              planilha enquanto ninguem de fato mudou nada. */}
+          <label className={styles.campo}>
+            <span className={styles.rotulo}>
+              Detalhes do produto{' '}
+              <em className={styles.ajuda}>o quadro das disciplinas, abaixo da descrição no site</em>
+            </span>
+            <textarea
+              className={styles.textarea}
+              name="detalhes"
+              rows={12}
+              defaultValue={editando.detalhesAjustados ?? editando.detalhesDaPlanilha ?? ''}
+            />
+            <em className={styles.ajuda}>
+              Título do módulo entre dois asteriscos de cada lado, e cada disciplina numa linha
+              &quot;34. Nome da disciplina · 409 páginas&quot;. A numeração continua de onde o
+              número da primeira linha do módulo mandar.
+            </em>
+          </label>
+
           <label className={styles.campo}>
             <span className={styles.rotulo}>
               Observação interna <em className={styles.ajuda}>não aparece no site</em>
@@ -729,6 +761,16 @@ export default function Gerenciador({
                     <label className={styles.campo}>
                       <span className={styles.rotulo}>Descrição</span>
                       <textarea name="descricao" className={styles.textarea} rows={10} defaultValue={m.descricao ?? ''} />
+                    </label>
+
+                    {/* material criado aqui nao tem planilha por tras, entao o
+                        campo comeca vazio e o que for escrito e o que vale */}
+                    <label className={styles.campo}>
+                      <span className={styles.rotulo}>
+                        Detalhes do produto{' '}
+                        <em className={styles.ajuda}>o quadro das disciplinas; vazio = não aparece</em>
+                      </span>
+                      <textarea name="detalhes" className={styles.textarea} rows={12} defaultValue={m.detalhes ?? ''} />
                     </label>
 
                     <label className={styles.check}>

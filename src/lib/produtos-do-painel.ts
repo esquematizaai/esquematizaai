@@ -37,6 +37,7 @@ export interface ProdutoDoPainel {
   capa_largura: number | null;
   capa_altura: number | null;
   descricao: string | null;
+  detalhes: string | null;
   oculto: boolean;
   destaque: boolean;
 }
@@ -54,7 +55,7 @@ const COLUNAS_PUBLICAS =
   'id, nome, categoria, area, ferramenta, formato, ' +
   'preco, preco_de, checkout, url_site, ' +
   'capa_url, capa_largura, capa_altura, ' +
-  'descricao, oculto, destaque';
+  'descricao, detalhes, oculto, destaque';
 
 /** molde vazio, para o produto do painel caber no mesmo tipo da planilha */
 function comoProduto(p: ProdutoDoPainel): Produto {
@@ -205,6 +206,22 @@ export function capasDoPainel(
       width: p.capa_largura ?? 452,
       height: p.capa_altura ?? 640,
     });
+  }
+  return mapa;
+}
+
+/**
+ * O quadro "Detalhes do produto" dos materiais criados no painel.
+ *
+ * Os da planilha guardam esse texto em produtos_ajustes, junto com preco e
+ * descricao; os criados aqui nao passam por aquela tabela, entao guardam o
+ * proprio. Sao dois caminhos para a mesma coisa porque sao duas origens, e a
+ * pagina nao precisa saber de qual deles veio.
+ */
+export function detalhesDoPainel(doPainel: ProdutoDoPainel[]): Map<string, string> {
+  const mapa = new Map<string, string>();
+  for (const p of doPainel) {
+    if (p.detalhes) mapa.set(p.id, p.detalhes);
   }
   return mapa;
 }

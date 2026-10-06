@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { criarSupabaseServer } from '@/lib/supabase/server';
 import { exigirAdmin } from '@/lib/supabase/admin-guard';
 import { enviarImagem } from '@/lib/supabase/enviar-imagem';
-import { produtos } from '@/data/catalogo';
+import { produtos, conteudoDe } from '@/data/catalogo';
 import { comparavel } from '@/lib/produtos-do-painel';
 import { lerScript } from './script-ler';
 
@@ -133,6 +133,22 @@ export async function salvarAjuste(formData: FormData): Promise<ResultadoAjuste>
   }
 
   const descricao = String(formData.get('descricao') ?? '').trim() || null;
+
+  /**
+   * O quadro "Detalhes do produto".
+   *
+   * O CAMPO CHEGA PREENCHIDO com o texto da planilha, porque sao 33 linhas
+   * numeradas e ninguem redigita isso para acrescentar uma. O efeito colateral
+   * e que salvar sem mexer gravaria uma copia, e dali em diante o produto
+   * deixaria de acompanhar a planilha sem ninguem perceber.
+   *
+   * Entao: igual ao da planilha grava null, que e "sem ajuste". So vira ajuste
+   * o texto que o Sergio de fato mudou.
+   */
+  const detalhesBruto = String(formData.get('detalhes') ?? '').trim();
+  const daPlanilha = (conteudoDe(produto_id).detalhes ?? '').trim();
+  const detalhes = !detalhesBruto || detalhesBruto === daPlanilha ? null : detalhesBruto;
+
   const observacao = String(formData.get('observacao') ?? '').trim() || null;
   const oculto = String(formData.get('oculto') ?? '') === 'on';
   const destaque = String(formData.get('destaque') ?? '') === 'on';
@@ -188,6 +204,7 @@ export async function salvarAjuste(formData: FormData): Promise<ResultadoAjuste>
       preco,
       preco_de: precoDe,
       descricao,
+      detalhes,
       observacao,
       oculto,
       destaque,
@@ -607,6 +624,7 @@ export async function editarMaterialDoPainel(formData: FormData): Promise<Result
       checkout: paraLink(checkout),
       url_site: paraLink(urlSite),
       descricao: String(formData.get('descricao') ?? '').trim() || null,
+      detalhes: String(formData.get('detalhes') ?? '').trim() || null,
       oculto: String(formData.get('oculto') ?? '') === 'on',
       atualizado_por: permissao.email,
       atualizado_em: new Date().toISOString(),

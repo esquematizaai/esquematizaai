@@ -1,5 +1,5 @@
 import { criarSupabaseServer } from '@/lib/supabase/server';
-import { produtos, ofertaAtual } from '@/data/catalogo';
+import { produtos, ofertaAtual, conteudoDe } from '@/data/catalogo';
 import Gerenciador, { type ItemAdmin, type MaterialDoPainel } from './Gerenciador';
 import { textoDoModelo } from './script-modelo';
 import { exportacaoDaLoja } from '@/lib/catalogo-exportacao';
@@ -19,7 +19,7 @@ export default async function MateriaisAdminPage() {
    */
   const { data: ajustes } = await supabase
     .from('produtos_ajustes')
-    .select('produto_id, preco, descricao, observacao, oculto, destaque, ordem, checkout, preco_de, atualizado_em');
+    .select('produto_id, preco, descricao, detalhes, observacao, oculto, destaque, ordem, checkout, preco_de, atualizado_em');
 
   /**
    * Os materiais criados aqui no painel.
@@ -31,7 +31,7 @@ export default async function MateriaisAdminPage() {
    */
   const { data: doPainel } = await supabase
     .from('produtos_novos')
-    .select('id, nome, categoria, area, ferramenta, preco, preco_de, checkout, url_site, capa_url, descricao, oculto, criado_em')
+    .select('id, nome, categoria, area, ferramenta, preco, preco_de, checkout, url_site, capa_url, descricao, detalhes, oculto, criado_em')
     .order('criado_em', { ascending: false });
 
   const criadosAqui: MaterialDoPainel[] = (doPainel ?? []).map((p) => ({
@@ -46,6 +46,7 @@ export default async function MateriaisAdminPage() {
     urlSite: (p.url_site as string | null) ?? null,
     capaUrl: (p.capa_url as string | null) ?? null,
     descricao: (p.descricao as string | null) ?? null,
+    detalhes: (p.detalhes as string | null) ?? null,
     oculto: Boolean(p.oculto),
     criadoEm: (p.criado_em as string | null) ?? null,
   }));
@@ -69,6 +70,15 @@ export default async function MateriaisAdminPage() {
       temCheckout: Boolean(p.checkouts.normal || p.checkouts.black),
       vendavel: oferta !== null,
       descricaoAjustada: (ajuste?.descricao as string | null) ?? null,
+      detalhesAjustados: (ajuste?.detalhes as string | null) ?? null,
+      /**
+       * O texto que a planilha tem hoje, para o campo abrir preenchido.
+       *
+       * Vai junto de proposito, e nao so quando ha ajuste: sao ate 33 linhas
+       * numeradas, e pedir para o Sergio redigitar tudo isso para acrescentar
+       * um modulo seria o mesmo que nao ter o campo.
+       */
+      detalhesDaPlanilha: conteudoDe(p).detalhes ?? null,
       observacao: (ajuste?.observacao as string | null) ?? null,
       oculto: Boolean(ajuste?.oculto),
       destaque: Boolean(ajuste?.destaque),

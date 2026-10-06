@@ -6,6 +6,7 @@ import {
   capasDoPainel,
   destaquesDoPainel,
   referenciasDoPainel,
+  detalhesDoPainel,
 } from '@/lib/produtos-do-painel';
 
 /**
@@ -43,6 +44,15 @@ export interface Ajuste {
   checkout: string | null;
   /** preco ancora, riscado ao lado do cobrado */
   preco_de: number | null;
+  /**
+   * O quadro "Detalhes do produto", escrito no painel.
+   *
+   * Separado da descricao porque sao dois quadros diferentes da mesma pagina, e
+   * o Sergio descobriu isso do jeito ruim: escreveu o Modulo VI na descricao,
+   * com um titulo "## Detalhes do produto", e o texto foi parar em "Sobre o
+   * material" enquanto o quadro de baixo seguia mostrando o da planilha.
+   */
+  detalhes: string | null;
 }
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -55,7 +65,7 @@ async function buscarAjustes(): Promise<Map<string, Ajuste>> {
     const supabase = createClient(URL, CHAVE, { auth: { persistSession: false } });
     const { data, error } = await supabase
       .from('produtos_ajustes')
-      .select('produto_id, preco, descricao, oculto, destaque, ordem, checkout, preco_de');
+      .select('produto_id, preco, descricao, detalhes, oculto, destaque, ordem, checkout, preco_de');
 
     if (error) {
       console.error('[catalogo] ajustes indisponíveis:', error.message);
@@ -113,6 +123,14 @@ export interface ProdutoAjustado {
    */
   descricaoDoPainel: string | null;
   /**
+   * O quadro "Detalhes do produto" escrito no painel, quando existe.
+   *
+   * Vale por cima do texto da planilha e sobrevive a uma reimportacao, que e o
+   * ponto: o conteudo-produto.json e gerado, e o que o Sergio escrever nele
+   * seria apagado na importacao seguinte.
+   */
+  detalhesDoPainel: string | null;
+  /**
    * Capa do produto criado no painel. Os da planilha continuam com a do
    * capas.json, resolvida por capaDe(); só os do painel guardam a imagem no
    * Supabase, porque o painel não escreve no repositório.
@@ -134,6 +152,7 @@ export async function catalogoParaVitrine(): Promise<ProdutoAjustado[]> {
   const capas = capasDoPainel(doPainel);
   const destacadosNoPainel = destaquesDoPainel(doPainel);
   const referencias = referenciasDoPainel(doPainel);
+  const detalhes = detalhesDoPainel(doPainel);
 
   for (const p of todos) {
     const a = ajustes.get(p.id);
@@ -151,6 +170,7 @@ export async function catalogoParaVitrine(): Promise<ProdutoAjustado[]> {
       oferta,
       destaque: Boolean(a?.destaque) || destacadosNoPainel.has(p.id),
       descricaoDoPainel: a?.descricao ?? null,
+      detalhesDoPainel: a?.detalhes ?? detalhes.get(p.id) ?? null,
       ordem: a?.ordem ?? null,
       capaDoPainel: capas.get(p.id) ?? null,
     });
@@ -180,6 +200,7 @@ export async function ajustadosPorId(ids: string[]): Promise<Map<string, Produto
   const capas = capasDoPainel(doPainel);
   const destacadosNoPainel = destaquesDoPainel(doPainel);
   const referencias = referenciasDoPainel(doPainel);
+  const detalhes = detalhesDoPainel(doPainel);
   const saida = new Map<string, ProdutoAjustado>();
 
   for (const id of ids) {
@@ -200,6 +221,7 @@ export async function ajustadosPorId(ids: string[]): Promise<Map<string, Produto
       oferta,
       destaque: Boolean(a?.destaque) || destacadosNoPainel.has(base.id),
       descricaoDoPainel: a?.descricao ?? null,
+      detalhesDoPainel: a?.detalhes ?? detalhes.get(base.id) ?? null,
       ordem: a?.ordem ?? null,
       capaDoPainel: capas.get(base.id) ?? null,
     });
@@ -265,6 +287,7 @@ export async function produtoAjustado(id: string): Promise<ProdutoAjustado | nul
     oferta,
     destaque: Boolean(a?.destaque) || destaquesDoPainel(doPainel).has(base.id),
     descricaoDoPainel: a?.descricao ?? null,
+    detalhesDoPainel: a?.detalhes ?? detalhesDoPainel(doPainel).get(base.id) ?? null,
     ordem: a?.ordem ?? null,
     capaDoPainel: capasDoPainel(doPainel).get(base.id) ?? null,
   };
