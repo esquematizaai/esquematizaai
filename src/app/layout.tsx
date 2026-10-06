@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Analytics from "@/components/Analytics";
@@ -71,6 +72,11 @@ export default function RootLayout({
             não existir, mas ler o arquivo nesta ordem conta a história certa:
             a medição nossa primeiro, a da agência em cima. */}
         <TagManager />
+        {/* Aviso da nova área de membros, escrito pelo Sérgio, com prazo para
+            morrer sozinho em 31/12/2026. O arquivo em public/js explica por que
+            ele mora solto ali e por que não foi publicado pelo GTM. Vem por
+            último porque mede pelo dataLayer, que os dois acima já criaram. */}
+        <Script src="/js/aviso-area-de-membros.js" strategy="afterInteractive" />
       </body>
     </html>
   );

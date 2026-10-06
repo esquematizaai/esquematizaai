@@ -57,7 +57,23 @@ export default function LeadPopup() {
     if (typeof window === 'undefined') return;
     if (window.localStorage.getItem(STORAGE_KEY)) return;
 
-    const timer = window.setTimeout(() => setOpen(true), DELAY_MS);
+    const timer = window.setTimeout(() => {
+      /**
+       * Dois popups na mesma tela, não.
+       *
+       * O aviso da nova área de membros abre aos 2,5 segundos em todas as
+       * páginas; este abre aos 8, e só na home. A home é o único lugar onde os
+       * dois se encontram, e quem ainda não tivesse fechado aquele veria este
+       * nascer por cima: nenhum dos dois seria lido, e o segundo ainda pediria
+       * e-mail a quem já é cliente.
+       *
+       * Este cede a vez, e não o contrário: o aviso da área de membros avisa
+       * alguém que já pagou onde está o material dele, e tem prazo para morrer
+       * em 31/12/2026. Este aqui volta na próxima visita.
+       */
+      if (document.getElementById('esq-pam')) return;
+      setOpen(true);
+    }, DELAY_MS);
     return () => window.clearTimeout(timer);
   }, []);
 
