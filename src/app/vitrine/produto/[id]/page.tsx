@@ -322,7 +322,11 @@ export default async function ProdutoPage({
       '@context': 'https://schema.org',
       '@type': 'Product',
       name: produto.nome,
-      description: (produto.sobre ?? '').replace(/\s+/g, ' ').trim().slice(0, 500) || undefined,
+      // limpa a marcação igual a descrição da aba faz, e pelo mesmo motivo: o
+      // Google lê isto, e "## COMBO" com "**37 (trinta e sete)**" sai no
+      // resultado da busca com cerquilha e asterisco. Era só o espaço em branco
+      // que estava sendo arrumado aqui, e o Sérgio viu o resto passar.
+      description: semMarcacao(produto.sobre ?? '').slice(0, 500) || undefined,
       category: produto.area ?? undefined,
       ...(capa ? { image: `${SITE_URL}${capa.src}` } : {}),
       brand: { '@type': 'Brand', name: 'Esquematiza Aí' },
@@ -343,7 +347,7 @@ export default async function ProdutoPage({
             name: q.pergunta,
             acceptedAnswer: {
               '@type': 'Answer',
-              text: q.resposta.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim(),
+              text: semMarcacao(q.resposta),
             },
           })),
         }]
