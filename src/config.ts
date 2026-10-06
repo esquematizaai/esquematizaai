@@ -126,8 +126,17 @@ export function textoParaLoja(texto: string): string {
   );
 }
 
-// Área do aluno (botão do topo). Substituiu o antigo /minha-conta do WordPress.
-export const AREA_ALUNO_URL = 'https://membros.esquematizaai.com/logar';
+/**
+ * Área do aluno, para onde vai o botão do topo.
+ *
+ * VOLTOU PARA A LOJA EM 05/10/2026, e a volta é o ponto. Durante um tempo o
+ * aluno entrava pelo membros.esquematizaai.com; agora a conta, o pedido e o
+ * download estão todos no WooCommerce, e é para lá que o Sérgio está migrando
+ * quem comprou pela Eduzz e pela Tutory. Duas portas para a mesma coisa é o
+ * tipo de confusão que vira e-mail de suporte: o aluno tenta a porta antiga,
+ * não encontra o material novo e acha que perdeu o acesso que pagou.
+ */
+export const AREA_ALUNO_URL = 'https://loja.esquematizaai.com/minha-conta/';
 
 // Suporte do Esquematiza Aí: +55 11 5286-5954.
 // Todo botão de WhatsApp do site aponta para cá; trocar aqui muda o site inteiro.
