@@ -5,7 +5,7 @@ import UrgencyBar from './UrgencyBar';
 import BuscaEAtalhos from '@/components/BuscaEAtalhos';
 import CarrosselDestaque, { DESTAQUES, type Destaque } from '@/components/CarrosselDestaque';
 import OfferCarousel, { type OfertaHero } from './OfferCarousel';
-import { capaDe, formatarPreco } from '@/data/catalogo';
+import { capaDe } from '@/data/catalogo';
 import { ajustadosPorId, destaquesDaHome } from '@/lib/catalogo-ajustes';
 
 // Ofertas reais que giram no card do hero: o combo completo de cada área + a
@@ -95,7 +95,7 @@ export default async function HeroSection() {
           return a ? [a] : [];
         });
 
-  const destaquesDosProdutos: Destaque[] = fonte.flatMap(({ produto: p, oferta: o, capaDoPainel }) => {
+  const destaquesDosProdutos: Destaque[] = fonte.flatMap(({ produto: p, capaDoPainel }) => {
     const capa = capaDoPainel ?? capaDe(p);
     // produto sem capa fica de fora, senão o slide abriria um retângulo vazio
     if (!capa) return [];
@@ -104,7 +104,9 @@ export default async function HeroSection() {
       src: capa.src,
       alt: `Capa do material ${p.nome}`,
       titulo: p.nome,
-      linha: `${formatarPreco(o.preco)} à vista ou 12x de ${formatarPreco(o.parcela12x)}`,
+      // sem preço aqui desde 07/10/2026: "a ideia é a pessoa clicar e saber o
+      // preço lá dentro (vão ter 2 preços)". O campo é opcional no carrossel,
+      // então o slide fica com capa, nome e botão.
       href: `/vitrine/produto/${p.id}`,
       rotuloDoBotao: 'Ver material',
     }];

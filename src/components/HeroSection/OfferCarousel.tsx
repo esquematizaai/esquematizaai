@@ -17,7 +17,6 @@ export interface OfertaHero {
 
 const ROTACAO_MS = 5000;
 
-const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function OfferCarousel({ ofertas }: { ofertas: OfertaHero[] }) {
   const [idx, setIdx] = useState(0);
@@ -56,18 +55,10 @@ export default function OfferCarousel({ ofertas }: { ofertas: OfertaHero[] }) {
       <div key={oferta.id} className={styles.offerSlide}>
         <div className={styles.offerName}>{oferta.nome}</div>
 
-        {oferta.precoAntigo !== null && (
-          <div className={styles.offerPriceRow}>
-            <span className={styles.offerOldPrice}>de {brl.format(oferta.precoAntigo)}</span>
-            {oferta.percentualOff !== null && (
-              <span className={styles.offerDiscount}>-{oferta.percentualOff}%</span>
-            )}
-          </div>
-        )}
-
-        <div className={styles.offerPrice}>
-          <span className={styles.offerAmount}>{brl.format(oferta.preco)}</span>
-        </div>
+        {/* PREÇO FORA DO CARTÃO desde 07/10/2026, a pedido do Sérgio: "a ideia
+                      é a pessoa clicar e saber o preço lá dentro (vão ter 2 preços)".
+                      Com a loja vendendo 12 e 24 meses, um número só aqui contradiz
+                      a página do produto, que abre com o plano de 24 marcado. */}
 
         {/* mesma regra dos cards: cai na página do produto primeiro, e o
             checkout fica lá dentro, depois da descrição */}

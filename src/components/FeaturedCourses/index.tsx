@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './styles.module.css';
-import { formatarPreco, capaDe, type Produto, type Oferta } from '@/data/catalogo';
+import { capaDe, type Produto, type Oferta } from '@/data/catalogo';
 import { ajustadosPorId } from '@/lib/catalogo-ajustes';
 import { rotuloDeFerramenta } from '@/data/catalogo/rotulos';
 
@@ -50,7 +50,7 @@ export default async function FeaturedCourses() {
       </p>
 
       <div className={styles.grid}>
-        {planos.map(({ produto, oferta }) => {
+        {planos.map(({ produto }) => {
           const emEvidencia = produto.id === ID_EM_EVIDENCIA;
           const capa = capaDe(produto);
 
@@ -82,9 +82,10 @@ export default async function FeaturedCourses() {
                   {rotuloDeFerramenta(produto.ferramenta, produto.categoria)}
                 </span>
                 {produto.area && <span className={styles.badgeArea}>{produto.area}</span>}
-                {oferta.percentualOff !== null && (
-                  <span className={styles.offPill}>-{oferta.percentualOff}%</span>
-                )}
+                {/* PREÇO FORA DO CARTÃO desde 07/10/2026, a pedido do Sérgio: "a ideia
+                      é a pessoa clicar e saber o preço lá dentro (vão ter 2 preços)".
+                      Com a loja vendendo 12 e 24 meses, um número só aqui contradiz
+                      a página do produto, que abre com o plano de 24 marcado. */}
               </div>
 
               <div className={styles.cardBody}>
@@ -98,12 +99,7 @@ export default async function FeaturedCourses() {
                   <span className={styles.selo}>Resumos e flashcards no mesmo plano</span>
                 )}
 
-                <div className={styles.priceContainer}>
-                  {oferta.precoAntigo !== null && (
-                    <span className={styles.oldPrice}>de {formatarPreco(oferta.precoAntigo)}</span>
-                  )}
-                  <span className={styles.currentPrice}>{formatarPreco(oferta.preco)}</span>
-                </div>
+
               </div>
 
               {/* leva à página do plano, não ao checkout: assinatura é compra

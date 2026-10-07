@@ -27,7 +27,6 @@ export interface AreaSection {
 
 const MAX_POR_SECAO = 6;
 
-const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function AreaCarousel({ sections }: { sections: AreaSection[] }) {
   const [active, setActive] = useState(0);
@@ -86,9 +85,10 @@ export default function AreaCarousel({ sections }: { sections: AreaSection[] }) 
                       )}
                       <div className={styles.cardHeader}>
                         <span className={styles.badge}>{item.rotulo}</span>
-                        {item.percentualOff !== null && (
-                          <span className={styles.offPill}>-{item.percentualOff}%</span>
-                        )}
+                        {/* PREÇO FORA DO CARTÃO desde 07/10/2026, a pedido do Sérgio: "a ideia
+                      é a pessoa clicar e saber o preço lá dentro (vão ter 2 preços)".
+                      Com a loja vendendo 12 e 24 meses, um número só aqui contradiz
+                      a página do produto, que abre com o plano de 24 marcado. */}
                       </div>
 
                       <h3 className={styles.cardTitle}>
@@ -97,12 +97,7 @@ export default function AreaCarousel({ sections }: { sections: AreaSection[] }) 
                         </Link>
                       </h3>
 
-                      <div className={styles.cardPriceRow}>
-                        {item.precoAntigo !== null && (
-                          <span className={styles.cardOldPrice}>de {brl.format(item.precoAntigo)}</span>
-                        )}
-                        <span className={styles.cardPrice}>{brl.format(item.preco)}</span>
-                      </div>
+
 
                       {/* leva à página do produto; o checkout fica lá dentro */}
                       <Link
