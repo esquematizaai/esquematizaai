@@ -2,34 +2,39 @@
 
 import React from 'react';
 import styles from './styles.module.css';
-import { useCountdown, pad } from './useCountdown';
 
+/**
+ * A tarja do topo. Hoje ela fala de parcelamento, e não mais de cupom.
+ *
+ * ATÉ 07/10/2026 ELA ANUNCIAVA O CUPOM ESQUEMATIZA10, de 10% na primeira
+ * compra, com um relógio de 10 minutos ao lado. O Sérgio mandou tirar quando a
+ * loja passou a vender cada material em 12 ou 24 meses de acesso, com parcela
+ * sem juros: o argumento de venda deixou de ser desconto e passou a ser caber no
+ * cartão. O cupom em si é da loja, e sair daqui não o apaga de lá.
+ *
+ * O RELÓGIO SAIU JUNTO, e essa parte é decisão de engenharia. Contagem
+ * regressiva serve para oferta que acaba. Parcelamento não acaba às 17h32: é
+ * condição permanente do checkout. Um relógio ao lado dele seria pressa
+ * inventada, e a pessoa que voltasse dez minutos depois veria a mesma frase com
+ * o relógio zerado e aprenderia que a nossa urgência é de mentira.
+ *
+ * "ATÉ 3x" É O MÁXIMO, E O MÁXIMO É VERDADE EM 84 DOS 120 MATERIAIS. Os 30 de
+ * Legislação Tributária e outros 6 vão até 2x, e esta tarja aparece na home, na
+ * vitrine e nas páginas de área, que listam o catálogo inteiro. Por isso a frase
+ * diz "até", e por isso ela não promete prazo de acesso nem valor de parcela:
+ * esses variam por material e quem diz é a página do produto.
+ */
 export default function UrgencyBar() {
-  const remaining = useCountdown();
-
   return (
     <div className={styles.urgencyBar}>
       <div className={styles.urgencyBarInner}>
-        <span className={styles.urgencyFlash}>🔥</span>
+        <span className={styles.urgencyFlash}>💳</span>
         <span className={styles.urgencyText}>
-          Cupom de <strong>10% OFF</strong> na sua primeira compra. Use o código{' '}
-          <span className={styles.urgencyCupom}>ESQUEMATIZA10</span> em qualquer produto do site,
-          menos a mentoria.
+          Parcele seu material em <strong>até 3x sem juros</strong> no cartão. Aproveite!
         </span>
-        {/* Relógio e botão andam juntos num bloco só.
-            A copy do cupom é longa: o conjunto pede 1.302px numa faixa de
-            1.139px, então em telas comuns ele quebra em duas linhas de
-            qualquer jeito. Soltos, o relógio ficava pendurado no fim da
-            primeira linha e o botão sozinho embaixo. Agrupados, a quebra
-            vira leitura: o recado em cima, o prazo e a ação embaixo. */}
         <span className={styles.urgencyAcao}>
-          {/* Minutos e segundos, não mais horas: o prazo agora é de 10 minutos
-              e um "00:09:58" faria a pessoa ler as horas primeiro. */}
-          <span className={styles.urgencyClock}>
-            {remaining ? `${pad(remaining.minutes)}:${pad(remaining.seconds)}` : '--:--'}
-          </span>
           <a href="/vitrine" className={styles.urgencyCta}>
-            QUERO MEU DESCONTO →
+            VER MATERIAIS →
           </a>
         </span>
       </div>
