@@ -61,12 +61,47 @@ export interface ProdutoPlanos {
 const ENDPOINT = 'https://loja.esquematizaai.com/wp-json/esq/v1/planos';
 const REVALIDATE_SEGUNDOS = 600; // 10 min
 
-const porId = new Map<number, ProdutoPlanos>(
-  (snapshot as { produtos: ProdutoPlanos[] }).produtos.map((p) => [p.id, p]),
-);
+const arquivo = snapshot as { geradoEm?: string; produtos: ProdutoPlanos[] };
 
-/** Lê do snapshot local (síncrono). */
+const porId = new Map<number, ProdutoPlanos>(arquivo.produtos.map((p) => [p.id, p]));
+
+/**
+ * O paraquedas tem prazo de validade, e isso não é zelo exagerado.
+ *
+ * Em 07/10/2026, no mesmo dia em que isto entrou no ar, o Sérgio mudou o preço
+ * de 24 meses nos 84 produtos com plano: o Combo Fiscal passou de R$ 877 para
+ * R$ 1.047. O arquivo gravado de manhã continuou dizendo R$ 877. Se o endpoint
+ * tivesse caído naquela hora, a página anunciaria R$ 877 e a loja cobraria
+ * R$ 1.047. Anunciar abaixo do que se cobra é o erro de setembro de novo, e
+ * quem responde por ele é a empresa.
+ *
+ * NENHUMA CONTA FEITA AQUI PEGARIA ISSO. O preço de 12 meses não mudou, então
+ * nem comparar com o do painel acusaria. A única informação honesta que o
+ * arquivo tem sobre si mesmo é a idade.
+ *
+ * Passado o prazo, a página volta a ser o que era antes dos planos: preço único,
+ * vindo do painel, com o link sem `&plano=`, que a loja cobra como 12 meses.
+ * Perde-se a oferta de 24 meses, que é um prejuízo de venda; o outro caminho
+ * seria um preço errado na tela, que é um prejuízo de confiança.
+ */
+const VALIDADE_DO_ARQUIVO_MS = 14 * 24 * 60 * 60 * 1000;
+
+function arquivoAindaServe(): boolean {
+  if (!arquivo.geradoEm) return false;
+  const idade = Date.now() - new Date(arquivo.geradoEm).getTime();
+  if (Number.isNaN(idade) || idade > VALIDADE_DO_ARQUIVO_MS) {
+    console.error(
+      `[planos] o endpoint da loja não respondeu e o arquivo de emergência é de ${arquivo.geradoEm}. ` +
+        'Velho demais para anunciar preço. Rode: curl -s https://loja.esquematizaai.com/wp-json/esq/v1/planos -o src/data/planos.json',
+    );
+    return false;
+  }
+  return true;
+}
+
+/** Lê do snapshot local (síncrono), se ele ainda estiver novo o bastante. */
 export function getProdutoPlanosLocal(lojaId: number): ProdutoPlanos | null {
+  if (!arquivoAindaServe()) return null;
   return porId.get(lojaId) ?? null;
 }
 
