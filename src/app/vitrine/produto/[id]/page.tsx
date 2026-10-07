@@ -362,10 +362,11 @@ export default async function ProdutoPage({
         {oferta.viaPaginaDeVendas ? 'Ver na loja →' : 'Comprar agora →'}
       </BotaoCompra>
 
-      {/* Amostras: aparece em TODO produto e leva à pasta compartilhada no Drive,
-          em vez de servir um PDF por produto. A segunda linha avisa que abre no
-          Drive e que a pasta é geral, senão a pessoa clica esperando a amostra
-          deste produto específico e se perde no meio dos arquivos. */}
+      {/* Amostras: aparece em TODO produto e leva à página de amostras da
+          empresa, em vez de servir um PDF por produto. A segunda linha avisa que
+          a página é geral, senão a pessoa clica esperando a amostra deste
+          produto específico. Até 07/10/2026 ela dizia "abre a pasta no Google
+          Drive", e deixar isso no ar depois da troca seria mentira na tela. */}
       <a
         className={styles.btnAmostra}
         href={AMOSTRAS_DRIVE_URL}
@@ -373,7 +374,7 @@ export default async function ProdutoPage({
         rel="noopener noreferrer"
       >
         Ver amostras grátis
-        <span className={styles.amostraPeso}>abre a pasta no Google Drive</span>
+        <span className={styles.amostraPeso}>amostras de todos os materiais</span>
       </a>
 
       {/* Diz para onde o botão leva, sem prometer o que não vai acontecer. */}

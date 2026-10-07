@@ -144,11 +144,19 @@ export const WHATSAPP_NUMERO = '551152865954';
 export const whatsappUrl = (mensagem: string) =>
   `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagem)}`;
 
-// Pasta de amostras no Google Drive. É para cá que vai o botão "Ver amostras
-// grátis" de TODOS os produtos: em vez de servir PDF por produto, manda a pessoa
-// para a pasta compartilhada. Trocar este link muda o botão do site inteiro.
-export const AMOSTRAS_DRIVE_URL =
-  'https://drive.google.com/drive/folders/1zHPjcFj8e86R4681MfL9LbkS-2a34f_O?usp=sharing';
+/**
+ * Para onde vai o botão "Ver amostras grátis" de TODOS os produtos.
+ *
+ * SAIU DO GOOGLE DRIVE EM 07/10/2026, por decisão do Pedro. Antes mandava para
+ * uma pasta compartilhada, onde a pessoa caía num monte de arquivo solto e
+ * precisava achar sozinha o que servia para ela. Agora é uma página de captura
+ * da própria empresa, que apresenta as amostras e mede quem chegou.
+ *
+ * O nome da constante ficou, de propósito: trocá-lo mexeria em sete arquivos
+ * para não mudar nada que o visitante veja. Ele diz onde o botão vai, e o
+ * destino está logo abaixo.
+ */
+export const AMOSTRAS_DRIVE_URL = 'https://lp.esquematizaai.com/amostras/';
 
 // Pasta pública dos vídeos de depoimento, no Supabase Storage.
 // Cada aluno tem dois arquivos com o mesmo nome: <slug>.mp4 e <slug>.jpg.
