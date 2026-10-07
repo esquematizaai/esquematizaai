@@ -406,9 +406,19 @@ export default function Catalogo({
                 <div className={styles.cardHeader}>
                   <span className={styles.badge}>{rotuloDeFerramenta(item.ferramenta, item.categoria)}</span>
                   {item.area && <span className={styles.badgeArea}>{item.area}</span>}
-                  {item.percentualOff !== null && (
-                    <span className={styles.offPill}>-{item.percentualOff}%</span>
-                  )}
+                  {/* O SELO DE DESCONTO E O PREÇO SAÍRAM DO CARTÃO EM 07/10/2026,
+                      a pedido do Sérgio: "vai deixar mais clean e quando a pessoa
+                      entrar ela verá duas ofertas".
+
+                      O motivo é mais do que estética. Desde que a loja vende 12 e
+                      24 meses, um preço só no cartão não representa o produto: a
+                      vitrine mostraria R$ 697 e a página do produto abriria com o
+                      plano de 24 meses marcado, em R$ 1.047. O cartão prometeria
+                      um número que a página seguinte não confirma.
+
+                      O percentualOff continua existindo no dado, porque a
+                      ordenação da vitrine usa ele para pôr os maiores descontos na
+                      frente. Só deixou de ser desenhado. */}
                 </div>
 
                 <div className={styles.cardBody}>
@@ -417,12 +427,8 @@ export default function Catalogo({
                       {item.nome}
                     </Link>
                   </h3>
-                  <div className={styles.priceContainer}>
-                    {item.precoAntigo !== null && (
-                      <span className={styles.oldPrice}>de {brl.format(item.precoAntigo)}</span>
-                    )}
-                    <span className={styles.currentPrice}>{brl.format(item.preco)}</span>
-                  </div>
+                  {/* o preço agora é dito na página do produto, onde cabem os
+                      dois planos lado a lado */}
                 </div>
 
                 <div className={styles.cardFooter}>
