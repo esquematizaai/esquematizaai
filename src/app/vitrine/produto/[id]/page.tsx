@@ -7,6 +7,9 @@ import Footer from '@/components/Footer';
 import Conteudo from '@/components/Artigo/Conteudo';
 import SelosTicker from '@/components/SelosTicker';
 import BarraCompra from '@/components/BarraCompra';
+import { PlanoProvider } from '@/components/planos/PlanoContext';
+import { SeletorPlanos, ParcelamentoLegislacao } from '@/components/planos/SeletorPlanos';
+import { getProdutoPlanos, lojaIdDoLink } from '@/lib/planos';
 import BotaoCompra from '@/components/BotaoCompra';
 import MedicaoDeProduto from '@/components/MedicaoDeProduto';
 import FaqProduto from '@/components/FaqProduto';
@@ -249,6 +252,61 @@ export default async function ProdutoPage({
    */
   const itemMedido = { id: produto.id, nome: produto.nome, preco: oferta.preco };
 
+  /**
+   * Os planos de acesso, quando a loja vende este material em 12 e 24 meses.
+   *
+   * A PONTE É O PRÓPRIO LINK DE COMPRA. O id do produto na loja já está dentro
+   * dele, no formato ?comprar=15761, e é o mesmo link que o Sérgio escolhe no
+   * painel. Não inventamos mapa de id nenhum: 97 dos 136 materiais vendáveis já
+   * apontam para lá nesse formato, e quem não aponta simplesmente não ganha
+   * planos, que é o certo. Produto sem link na loja não tem prazo para oferecer.
+   *
+   * Null em qualquer passo deixa a página exatamente como era antes.
+   */
+  const lojaId = lojaIdDoLink(oferta.checkout);
+  const planos = lojaId ? await getProdutoPlanos(lojaId) : null;
+  const temPlanos = planos?.tipo === 'planos' && !!planos.planos?.length;
+
+  /**
+   * Duas respostas do FAQ passam a depender do plano, e por isso são trocadas
+   * aqui, na hora de desenhar, e não no arquivo.
+   *
+   * O conteudo-produto.json É GERADO pela importação da planilha: o que for
+   * escrito nele à mão some na próxima importação. São 131 produtos com a mesma
+   * resposta palavra por palavra, e corrigir um a um seria corrigir de novo no
+   * mês que vem.
+   *
+   * O texto é o que o Sérgio mandou, e ele bate com o que a loja cobra: 3x sem
+   * juros só no plano de 24 meses, 2x no de 12 e 2x em Legislação Tributária.
+   */
+  const faq = conteudo.faq?.map((q) => {
+    const pergunta = q.pergunta.toLowerCase();
+    if (temPlanos && pergunta.includes('quanto tempo')) {
+      return {
+        ...q,
+        resposta:
+          'Depende do plano escolhido: 12 ou 24 meses para acessar a nossa plataforma e baixar o material com as respectivas atualizações.',
+      };
+    }
+    if (pergunta.includes('formas de pagamento')) {
+      if (temPlanos) {
+        return {
+          ...q,
+          resposta:
+            'Para garantir o acesso imediato ao material, você pode pagar via cartão de crédito em até 3x sem juros no plano de 24 meses ou em até 2x sem juros no plano de 12 meses (ou parcelar em até 12x com juros), ou à vista com cartão ou PIX.',
+        };
+      }
+      if (planos?.tipo === 'legislacao') {
+        return {
+          ...q,
+          resposta:
+            'Para garantir o acesso imediato ao material, você pode pagar via cartão de crédito em até 2x sem juros (ou parcelar em até 12x com juros), ou à vista com cartão ou PIX.',
+        };
+      }
+    }
+    return q;
+  });
+
   const cardCompra = (
     <div className={styles.buyCard} id="card-compra">
       {capa && (
@@ -261,29 +319,45 @@ export default async function ProdutoPage({
           className={styles.buyCapa}
         />
       )}
-      {oferta.percentualOff !== null && (
+      {/* Com planos, os dois cards substituem o selo e o bloco de preço: o
+          desconto e o valor passam a ser por prazo de acesso, e um selo solto
+          em cima diria respeito a qual dos dois? */}
+      {!temPlanos && oferta.percentualOff !== null && (
         <span className={styles.offPill}>-{oferta.percentualOff}% de desconto</span>
       )}
+      {temPlanos && <SeletorPlanos />}
       {/* A linha de parcelamento acompanha o preço riscado, e os dois só
           aparecem em produto com preço de referência confirmado pelo Sérgio.
           Sem referência, fica o preço sozinho, como sempre foi. */}
-      <div className={styles.priceBlock}>
-        {oferta.precoAntigo !== null && (
-          <span className={styles.oldPrice}>{formatarPreco(oferta.precoAntigo)}</span>
-        )}
-        <span className={styles.currentPrice}>{formatarPreco(oferta.preco)}</span>
-        {oferta.precoAntigo !== null && (
-          <span className={styles.parcelamento}>
-            <strong>12x de {formatarPreco(oferta.parcela12x)}</strong> ou{' '}
-            {formatarPreco(oferta.preco)} à vista
-          </span>
-        )}
-      </div>
+      {!temPlanos && (
+        <div className={styles.priceBlock}>
+          {oferta.precoAntigo !== null && (
+            <span className={styles.oldPrice}>{formatarPreco(oferta.precoAntigo)}</span>
+          )}
+          <span className={styles.currentPrice}>{formatarPreco(oferta.preco)}</span>
+          {/* Legislação Tributária não tem plano, mas tem 2x sem juros, e é a
+              loja que diz quantas. Os demais seguem com a linha de sempre. */}
+          {planos?.tipo === 'legislacao' ? (
+            <ParcelamentoLegislacao className={styles.parcelamento} />
+          ) : (
+            oferta.precoAntigo !== null && (
+              <span className={styles.parcelamento}>
+                <strong>12x de {formatarPreco(oferta.parcela12x)}</strong> ou{' '}
+                {formatarPreco(oferta.preco)} à vista
+              </span>
+            )
+          )}
+        </div>
+      )}
       <BotaoCompra
         className={styles.btnBuy}
         href={oferta.checkout}
         item={itemMedido}
-        aria-label={`${oferta.viaPaginaDeVendas ? 'Ver na loja' : 'Comprar'} ${produto.nome} por ${formatarPreco(oferta.preco)}`}
+        aria-label={
+          temPlanos
+            ? `${oferta.viaPaginaDeVendas ? 'Ver na loja' : 'Comprar'} ${produto.nome}`
+            : `${oferta.viaPaginaDeVendas ? 'Ver na loja' : 'Comprar'} ${produto.nome} por ${formatarPreco(oferta.preco)}`
+        }
       >
         {oferta.viaPaginaDeVendas ? 'Ver na loja →' : 'Comprar agora →'}
       </BotaoCompra>
@@ -337,19 +411,37 @@ export default async function ProdutoPage({
       category: produto.area ?? undefined,
       ...(capa ? { image: `${SITE_URL}${capa.src}` } : {}),
       brand: { '@type': 'Brand', name: 'Esquematiza Aí' },
-      offers: {
-        '@type': 'Offer',
-        price: oferta.preco,
-        priceCurrency: 'BRL',
-        availability: 'https://schema.org/InStock',
-        url: `${SITE_URL}/vitrine/produto/${produto.id}`,
-      },
+      /**
+       * Com dois prazos de acesso, o produto passa a ter dois preços, e dizer
+       * só um deles ao Google seria escolher qual mentira contar: o de 12 meses
+       * esconde o que a página mostra marcado, e o de 24 esconde o mais barato.
+       * AggregateOffer existe exatamente para isso, e o resultado da busca passa
+       * a mostrar a faixa.
+       */
+      offers:
+        temPlanos && planos?.planos
+          ? {
+              '@type': 'AggregateOffer',
+              priceCurrency: 'BRL',
+              lowPrice: Math.min(...planos.planos.map((p) => p.preco)),
+              highPrice: Math.max(...planos.planos.map((p) => p.preco)),
+              offerCount: planos.planos.length,
+              availability: 'https://schema.org/InStock',
+              url: `${SITE_URL}/vitrine/produto/${produto.id}`,
+            }
+          : {
+              '@type': 'Offer',
+              price: oferta.preco,
+              priceCurrency: 'BRL',
+              availability: 'https://schema.org/InStock',
+              url: `${SITE_URL}/vitrine/produto/${produto.id}`,
+            },
     },
-    ...(conteudo.faq?.length
+    ...(faq?.length
       ? [{
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          mainEntity: conteudo.faq.map((q) => ({
+          mainEntity: faq.map((q) => ({
             '@type': 'Question',
             name: q.pergunta,
             acceptedAnswer: {
@@ -362,6 +454,11 @@ export default async function ProdutoPage({
   ];
 
   return (
+    /* O plano escolhido vale para o card de compra e para a barra fixa do
+       rodapé, que são componentes diferentes em pontos distantes da árvore.
+       Sem um lugar comum, trocar o card não mexeria no preço da barra, e a
+       pessoa veria dois valores do mesmo material na mesma tela. */
+    <PlanoProvider produto={planos}>
     <main className={styles.main}>
       <Navbar />
       {/* A BARRA DE CUPOM SAIU DAQUI EM 23/09, a pedido do Sérgio, e o motivo
@@ -518,8 +615,8 @@ export default async function ProdutoPage({
                 natureza, e usar a do flashcard esticaria o que a pesquisa diz */}
             <AutoridadeCientifica ehFlashcards={ehFlashcards} />
 
-            {conteudo.faq && conteudo.faq.length > 0 && (
-              <FaqProduto perguntas={conteudo.faq} nomeDoProduto={produto.nome} />
+            {faq && faq.length > 0 && (
+              <FaqProduto perguntas={faq} nomeDoProduto={produto.nome} />
             )}
 
             {!sobre && !produto.sobre && !conteudo.detalhes && !produto.disciplinas && (
@@ -545,8 +642,8 @@ export default async function ProdutoPage({
       {/* aparece só quando o card de compra sai de vista */}
       <BarraCompra
         alvoId="card-compra"
-        preco={formatarPreco(oferta.preco)}
-        precoAntigo={oferta.precoAntigo !== null ? formatarPreco(oferta.precoAntigo) : null}
+        preco={oferta.preco}
+        precoAntigo={oferta.precoAntigo}
         rotulo={oferta.viaPaginaDeVendas ? 'Ver na loja →' : 'Comprar agora →'}
         href={oferta.checkout}
         item={itemMedido}
@@ -558,5 +655,6 @@ export default async function ProdutoPage({
 
       <Footer />
     </main>
+    </PlanoProvider>
   );
 }
